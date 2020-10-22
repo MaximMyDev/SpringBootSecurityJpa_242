@@ -1,7 +1,7 @@
 package web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,9 +18,11 @@ import java.util.Set;
 @RequestMapping(value = "/admin")
 public class AdminController {
     private final UserServiceImpl userService;
+    private final PasswordEncoder passwordEncoder;
     @Autowired
-    public AdminController(UserServiceImpl userService) {
+    public AdminController(UserServiceImpl userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -66,7 +68,7 @@ public class AdminController {
             Optional<User> newUser = userService.getUserByName(user.getName());
             user.setPassword(newUser.get().getPassword());
         } else {
-            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
 
         userService.edit(user);
@@ -92,7 +94,7 @@ public class AdminController {
             rolesArray.add(currentRole.get());
         }
         user.setRoles(rolesArray);
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/admin/list");
