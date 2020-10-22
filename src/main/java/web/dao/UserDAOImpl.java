@@ -7,8 +7,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Repository
-public class UserDAOImpl implements UserDAO {
+//@Repository
+public class UserDAOImpl {
+        //implements UserDAO {
+    /*
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -43,4 +45,6 @@ public class UserDAOImpl implements UserDAO {
                 .setParameter("username", name)
                 .getSingleResult();
     }
+
+     */
 }

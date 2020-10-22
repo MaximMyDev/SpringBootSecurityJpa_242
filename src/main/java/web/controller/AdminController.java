@@ -9,18 +9,27 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import web.model.Role;
 import web.model.User;
-import web.service.UserService;
+import web.service.UserServiceImpl;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Controller
 @RequestMapping(value = "/admin")
 public class AdminController {
+    /*
     private final UserService userService;
     @Autowired
     public AdminController(UserService userService) {
+        this.userService = userService;
+    }
+
+     */
+    private final UserServiceImpl userService;
+    @Autowired
+    public AdminController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
@@ -38,7 +47,7 @@ public class AdminController {
 
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
     public ModelAndView editPage(@PathVariable("id") Long id) {
-        User user = userService.getById(id);
+        Optional<User> user = userService.getById(id);
         List<Role> roles = userService.allRoles();
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("editUser");
@@ -51,20 +60,22 @@ public class AdminController {
     public ModelAndView editUser(@ModelAttribute("user") User user, @RequestParam("role") String[] role) {
         // получаем роль, и присваиваем
         if (role[0].equals("ROLE_NONE")) {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User userOld = userService.getUserByName(auth.getName());
-            user.setRoles(userOld.getRoles());
+            //Authentication auth = SecurityContextHolder.getContext().getAuthentication().getDetails();
+            Optional<User> userOld = userService.getById(user.getId());//getUserByName(auth.getName());
+            user.setRoles(userOld.get().getRoles());
         } else {
             Set<Role> rolesArray = new HashSet<>();
             for (String roles : role) {
-                rolesArray.add(userService.getRoleByRoleName(roles));
+                //rolesArray.add(userService.getRoleByRoleName(roles));
+                Optional<Role> currentRole = userService.getRoleByRoleName(roles);
+                rolesArray.add(currentRole.get());
             }
             user.setRoles(rolesArray);
         }
 
         if (user.getPassword().isEmpty() || user.getPassword() == null) {
-            User newUser = userService.getUserByName(user.getName());
-            user.setPassword(newUser.getPassword());
+            Optional<User> newUser = userService.getUserByName(user.getName());
+            user.setPassword(newUser.get().getPassword());
         } else {
             user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         }
@@ -88,7 +99,9 @@ public class AdminController {
     public ModelAndView addUser(@ModelAttribute("user") User user, @RequestParam("role") String[] role) {
         Set<Role> rolesArray = new HashSet<>();
         for (String roles : role) {
-            rolesArray.add(userService.getRoleByRoleName(roles));
+            //rolesArray.add(userService.getRoleByRoleName(roles));
+            Optional<Role> currentRole = userService.getRoleByRoleName(roles);
+            rolesArray.add(currentRole.get());
         }
         user.setRoles(rolesArray);
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
@@ -101,8 +114,8 @@ public class AdminController {
 
     @RequestMapping(value="/delete/{id}", method = RequestMethod.GET)
     public ModelAndView deleteUser(@PathVariable("id") Long id) {
-        User user = userService.getById(id);
-        userService.delete(user);
+        Optional<User> user = userService.getById(id);
+        userService.delete(user.get());
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/admin/list");
         return modelAndView;

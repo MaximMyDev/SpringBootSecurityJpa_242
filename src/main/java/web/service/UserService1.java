@@ -5,7 +5,8 @@ import web.model.User;
 
 import java.util.List;
 
-public interface UserService {
+public interface UserService1 {
+    /*
     List<User> allUsers();
     void add(User user);
     void delete(User user);
@@ -14,4 +15,6 @@ public interface UserService {
     List<Role> allRoles();
     Role getRoleByRoleName(String roleName);
     User getUserByName(String name);
+
+     */
 }

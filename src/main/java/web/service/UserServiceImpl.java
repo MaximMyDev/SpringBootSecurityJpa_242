@@ -4,65 +4,55 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.dao.RoleDAO;
-import web.dao.RoleDAOImpl;
 import web.dao.UserDAO;
-import web.dao.UserDAOImpl;
 import web.model.Role;
 import web.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
-
-    private UserDAO userDAO;
-    private RoleDAO roleDAO;
+public class UserServiceImpl {
+    private final UserDAO userDAO;
+    private final RoleDAO roleDAO;
     @Autowired
-    public void setUserService(UserDAOImpl userDAO, RoleDAOImpl roleDAO) {
+    public UserServiceImpl(UserDAO userDAO, RoleDAO roleDAO) {
         this.userDAO = userDAO;
         this.roleDAO = roleDAO;
     }
 
-    @Override
     public List<User> allUsers() {
-        return userDAO.allUsers();
+        return (List<User>) userDAO.findAll();
     }
 
-    @Override
     @Transactional
     public void add(User user) {
-        userDAO.add(user);
+        userDAO.save(user);
     }
 
-    @Override
     @Transactional
     public void delete(User user) {
         userDAO.delete(user);
     }
 
-    @Override
     @Transactional
     public void edit(User user) {
-        userDAO.edit(user);
+        userDAO.save(user);
     }
 
-    @Override
-    public User getById(Long id) {
-        return userDAO.getById(id);
+    public Optional<User> getById(Long id) {
+        return userDAO.findById(id);
     }
 
-    @Override
     public List<Role> allRoles() {
-        return roleDAO.allRoles();
+        return (List<Role>) roleDAO.findAll();
     }
 
-    @Override
-    public Role getRoleByRoleName(String roleName) {
-        return roleDAO.getRoleByRoleName(roleName);
+    public Optional<Role> getRoleByRoleName(String roleName) {
+        return roleDAO.findByRole(roleName);
     }
 
-    @Override
-    public User getUserByName(String name) {
-        return userDAO.getUserByName(name);
+    public Optional<User> getUserByName(String name) {
+        return userDAO.findByName(name);
     }
 }

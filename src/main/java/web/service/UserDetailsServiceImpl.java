@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import web.dao.UserDAO;
 import web.model.User;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
@@ -25,14 +26,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     // Для создания UserDetails используется интерфейс UserDetailsService, с единственным методом:
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        User user = userDao.getUserByName(s);
+        Optional<User> user = userDao.findByName(s);// .getUserByName(s);
 
-        log.info("Load user by name: " + user.getName());
+        log.info("Load user by name: " + user.get().getName());
         if(user == null){
             log.info("User not found!");
             throw new UsernameNotFoundException("Username not found");
         }
 
-        return user;
+        return user.get();
     }
 }

@@ -8,21 +8,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import web.model.User;
-import web.service.UserService;
+import web.service.UserServiceImpl;
+
+import java.util.Optional;
 
 
 @Controller
 public class UserController {
-    private final UserService userService;
+    private final UserServiceImpl userService;
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public ModelAndView allUsers() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.getUserByName(auth.getName());
+        Optional<User> user = userService.getUserByName(auth.getName());
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("userPage");
         modelAndView.addObject("currentUser", user);

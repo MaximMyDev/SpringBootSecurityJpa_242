@@ -7,9 +7,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Repository
+//@Repository
 // переделать на репозиторий
-public class RoleDAOImpl implements RoleDAO {
+public class RoleDAOImpl {
+    /*
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -26,4 +27,6 @@ public class RoleDAOImpl implements RoleDAO {
     public List<Role> allRoles() {
         return entityManager.createQuery("select r from Role r").getResultList();
     }
+
+     */
 }
