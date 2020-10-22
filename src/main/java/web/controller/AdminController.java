@@ -1,8 +1,6 @@
 package web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +17,6 @@ import java.util.Set;
 @Controller
 @RequestMapping(value = "/admin")
 public class AdminController {
-    /*
-    private final UserService userService;
-    @Autowired
-    public AdminController(UserService userService) {
-        this.userService = userService;
-    }
-
-     */
     private final UserServiceImpl userService;
     @Autowired
     public AdminController(UserServiceImpl userService) {
@@ -52,7 +42,7 @@ public class AdminController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("editUser");
         modelAndView.addObject("getRole", roles);
-        modelAndView.addObject("user", user);
+        modelAndView.addObject("user", user.get());
         return modelAndView;
     }
 
@@ -60,13 +50,12 @@ public class AdminController {
     public ModelAndView editUser(@ModelAttribute("user") User user, @RequestParam("role") String[] role) {
         // получаем роль, и присваиваем
         if (role[0].equals("ROLE_NONE")) {
-            //Authentication auth = SecurityContextHolder.getContext().getAuthentication().getDetails();
-            Optional<User> userOld = userService.getById(user.getId());//getUserByName(auth.getName());
+            // если роль не выбрана, грузим из базы старую роль
+            Optional<User> userOld = userService.getById(user.getId());
             user.setRoles(userOld.get().getRoles());
         } else {
             Set<Role> rolesArray = new HashSet<>();
             for (String roles : role) {
-                //rolesArray.add(userService.getRoleByRoleName(roles));
                 Optional<Role> currentRole = userService.getRoleByRoleName(roles);
                 rolesArray.add(currentRole.get());
             }
@@ -99,7 +88,6 @@ public class AdminController {
     public ModelAndView addUser(@ModelAttribute("user") User user, @RequestParam("role") String[] role) {
         Set<Role> rolesArray = new HashSet<>();
         for (String roles : role) {
-            //rolesArray.add(userService.getRoleByRoleName(roles));
             Optional<Role> currentRole = userService.getRoleByRoleName(roles);
             rolesArray.add(currentRole.get());
         }

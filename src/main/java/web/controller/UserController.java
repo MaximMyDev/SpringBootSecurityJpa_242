@@ -27,7 +27,7 @@ public class UserController {
         Optional<User> user = userService.getUserByName(auth.getName());
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("userPage");
-        modelAndView.addObject("currentUser", user);
+        modelAndView.addObject("currentUser", user.get());
         return modelAndView;
     }
 

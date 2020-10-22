@@ -46,7 +46,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
-
     // Необходимо для шифрования паролей
     @Bean
     public static PasswordEncoder passwordEncoder() {
